@@ -13,52 +13,41 @@
             overflow: auto;
             max-width: 98%
         }
-
         summary {
             font-weight: bold;
             color: gray;
             background-color: lightgray;
             border-bottom: 1px solid darkgrey
         }
-
         details {
             font-size: 28px;
             border: 1px dotted grey;
-
         }
-
         details details {
             font-size: 24px;
             padding-left: 20px;
         }
-
         details details details {
             font-size: 20px;
         }
-
         details details details details {
             font-size: 16px;
         }
-
         details details details details details {
             font-size: 12px;
             ;
         }
-
         details[open] summary::after {
             content: attr(data-open);
             color: grey;
         }
-
         details:not([open]) summary::after {
             content: attr(data-close);
             color: darkcyan;
         }
-
         summary::after {
             font-size: 70%
         }
-
         /* details:hover {
   background-color : lightskyblue
 } */
@@ -66,29 +55,24 @@
             background-color: cornsilk;
             /* color: blue; */
         }
-
         summary:hover {
             background-color: cornsilk;
             color: darkslategray;
         }
-
         details[open]>summary {
             background-color: white;
             color: darkslategray;
         }
-
         m1 {
             font-weight: bold;
             color: red;
             /* background-color: dodgerblue; */
         }
-
         m2 {
             font-weight: bold;
             color: blue;
             /* background-color: dodgerblue; */
         }
-
         .tabs {
             position: relative;
             min-height: 700px;
@@ -96,11 +80,9 @@
             clear: both;
             margin: 25px 0;
         }
-
         .tab {
             float: left;
         }
-
         .tab label {
             background: #eee;
             padding: 10px;
@@ -109,11 +91,9 @@
             position: relative;
             left: 1px;
         }
-
         .tab [type=radio] {
             display: none;
         }
-
         .content {
             position: absolute;
             top: 28px;
@@ -124,13 +104,11 @@
             padding: 20px;
             border: 1px solid #ccc;
         }
-
         [type=radio]:checked~label {
             background: white;
             border-bottom: 1px solid white;
             z-index: 2;
         }
-
         [type=radio]:checked~label~.content {
             z-index: 1;
         }
@@ -148,7 +126,148 @@
             </summary>
             to be ...
         </details>            
-
     </details>
 </body>
+<script>
+        function getUrlVars() {   //hm: URL parameters for data file and configuration file
+            var vars = {};
+            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+                if (value.slice(-1) == '/') {  //hm: remove '/' 
+                    value = value.slice(0, -1);   //hm: remove '/'
+                }                                //hm: remove '/'
+                vars[key] = value;
+            });
+            return vars;
+        }
+        var urlVar = getUrlVars();
+        edit = urlVar['e'];
+        if (edit == undefined) {
+            edit = 0;
+        } else {
+            edit = +edit;
+        }
+        // var edit = 2;
+        // var save = 1;
+        // document.execCommand("defaultParagraphSeparator", false, "p");
+        if (edit > 1) {
+            document.getElementById('root0').contentEditable = "true";
+        } else {
+            document.getElementById('root0').contentEditable = "false";
+            document.getElementById('new').hidden = true;
+            document.getElementById('save').hidden = true;
+        }
+        function extend(hm_fold) {
+            hm_fold.addEventListener("click", function () {
+                this.classList.toggle("active");
+                var hm_ctnt = this.nextElementSibling;
+                if (hm_ctnt.style.display === "block") {
+                    hm_ctnt.style.display = "none";
+                } else {
+                    hm_ctnt.style.display = "block";
+                }
+            });
+            if (edit > 1) {
+                hm_fold.children[1].addEventListener("click", function (event) {
+                    event.stopPropagation();
+                    var hm_ctnt = this.parentNode.nextElementSibling;
+                    var para = document.createElement('button');
+                    para.classList.add("hm_fold");
+                    para.innerText = "new item";
+
+                    var btn1 = document.createElement('button')
+                    btn1.innerText = "del";
+                    btn1.classList.add("hm_del")
+                    para.appendChild(btn1)
+                    var btn = document.createElement('button')
+                    btn.innerText = "add";
+                    btn.classList.add("hm_add")
+                    para.appendChild(btn)
+
+                    var hm_fold1 = hm_ctnt.appendChild(para);
+                    var para = document.createElement('div');
+                    para.classList.add("hm_ctnt");
+                    para.innerText = "......";
+                    if (edit > 0) {
+                        para.contentEditable = "true";
+                    } else {
+                        para.contentEditable = "false";
+                    }
+                    hm_ctnt.appendChild(para);
+                    extend(hm_fold1)
+                });
+                hm_fold.children[0].addEventListener("click", function (event) {
+                    event.stopPropagation();
+                    var hm_btn = this.parentNode;
+                    var hm_ctnt = hm_btn.nextElementSibling;
+                    hm_ctnt.remove();
+                    hm_btn.remove();
+                });
+            }
+        }
+
+        var coll = document.getElementsByClassName("hm_fold");
+        var i;
+        for (i = 0; i < coll.length; i++) {
+            if (edit > 1) {
+                var btn1 = document.createElement('button')
+                btn1.innerText = "del";
+                btn1.classList.add("hm_del")
+                coll[i].appendChild(btn1)
+                var btn = document.createElement('button')
+                btn.innerText = "add";
+                btn.classList.add("hm_add")
+                coll[i].appendChild(btn)
+            }
+            var hm_ctnt0 = coll[i].nextElementSibling
+            if (edit > 0) {
+                hm_ctnt0.contentEditable = "true";
+            } else {
+                hm_ctnt0.contentEditable = "false";
+            }
+            extend(coll[i])
+        }
+        extend()
+
+        function newRoot() {
+            var hm_ctnt = document.getElementById('root0')
+            var hm_fold = document.createElement('button');
+            hm_fold.classList.add("hm_fold");
+            hm_fold.innerText = "new item";
+
+            var btn1 = document.createElement('button')
+            btn1.innerText = "del";
+            btn1.classList.add("hm_del")
+            hm_fold.appendChild(btn1)
+            var btn = document.createElement('button')
+            btn.innerText = "add";
+            btn.classList.add("hm_add")
+            hm_fold.appendChild(btn)
+
+            // var hm_fold1 = hm_ctnt.appendChild(hm_fold);
+            var hm_ctnt1 = document.createElement('div');
+            hm_ctnt1.classList.add("hm_ctnt");
+            hm_ctnt1.innerText = "......";
+            hm_ctnt1.contentEditable = "true";
+            // hm_ctnt.appendChild(hm_ctnt1);
+            // hm_ctnt.insertBefore(hm_ctnt1, lastActive); //hm_ctnt.children[1]
+            hm_fold1 = hm_ctnt.insertBefore(hm_fold, lastActive);
+            hm_ctnt.insertBefore(hm_ctnt1, lastActive); //hm_ctnt.children[1]
+            extend(hm_fold1)
+        };
+
+        var lastActive = document.getElementById('foot');
+        function rootClick(event) {
+            if (event.path[0].id != 'new') { // if (event.path.slice(-6)[0].tagName != 'H1') {
+                lastActive = event.path.slice(-6)[0];
+                if (lastActive.className == 'hm_ctnt') {
+                    lastActive = lastActive.previousElementSibling;
+                }
+            }
+            console.info('new element focused', lastActive);
+            /* do stuff */
+        };
+
+</script>
+
+
 </html>
